@@ -63,6 +63,7 @@
 */timing/
 */testbench/
 */*_sim/
+.hdl_checker/
 incremental_db/
 db/
 _output_files/
