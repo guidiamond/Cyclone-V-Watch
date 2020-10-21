@@ -2,8 +2,6 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
--- top_level: agrupa I/Os, decodificador e processador
-
 ENTITY Relogio IS
   GENERIC (
     DATA_WIDTH : NATURAL := 8;
@@ -11,11 +9,9 @@ ENTITY Relogio IS
   );
 
   PORT (
-    -- Input ports
     CLOCK_50 : IN std_logic;
     SW       : IN std_logic_vector(2 DOWNTO 0);
     KEY      : IN std_logic_vector(3 DOWNTO 0);
-	 -- Output ports
 	 HEX0, HEX1, HEX2, HEX3, HEX4, HEX5 : OUT STD_LOGIC_VECTOR(6 DOWNTO 0)
   );
 END ENTITY;
@@ -31,7 +27,7 @@ ARCHITECTURE rlt OF Relogio IS
 
 BEGIN
 
-  Processador : ENTITY work.Processor
+  CPU : ENTITY work.Processor
     PORT MAP(
       Clk            => CLOCK_50,
       databus        => databus, 
@@ -41,7 +37,7 @@ BEGIN
       rawInstruction => processorInstruction
     );
 
-  Decodificador : ENTITY work.Decoder
+  Decoder : ENTITY work.Decoder
     PORT MAP(
       rawInstruction   => processorInstruction,
       store            => store,
@@ -53,21 +49,21 @@ BEGIN
       clearBaseTime    => clearTimeBase
     );
 	 
-  entradaChaves : ENTITY work.switch
+  swInput : ENTITY work.switch
     PORT MAP(
       input  => SW(2 DOWNTO 0),
       output => databus,
       enable => enableSwitches
     );
 
-  entradaBotoes : ENTITY work.button
+  buttonInput : ENTITY work.button
     PORT MAP(
       input  => KEY(2 DOWNTO 0),
       output => databus,
       enable => enableButtons
     );
 
-  interfaceBaseTempo : ENTITY work.divisorGenerico_e_Interface
+  baseTimeInput : ENTITY work.divisorGenerico_e_Interface
     PORT MAP(
       clk              => CLOCK_50,
       habilitaLeitura  => enableBaseTime,
@@ -76,7 +72,7 @@ BEGIN
 		  selBaseTempo     => SW(0)
     );
 
-  Displays : ENTITY work.display
+  DisplayOut : ENTITY work.display
     PORT MAP(
       input  => displayData,
       enable => enableDisplays,

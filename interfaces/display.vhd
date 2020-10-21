@@ -16,7 +16,6 @@ ENTITY display IS
 END ENTITY;
 ARCHITECTURE arch_name OF display IS
 BEGIN
-  -- Inicializacao display unidade segundos OU A/P (caso am/pm)
   DISPLAY0 : ENTITY work.conversorHex7Seg
     PORT MAP
     (
@@ -25,8 +24,6 @@ BEGIN
       habilita  => enable(0),
       saida7seg => H0
     );
-
-  -- Inicializacao display dezena segundos OU vazio (caso am/pm)
   DISPLAY1 : ENTITY work.conversorHex7Seg
     PORT MAP
     (
@@ -35,7 +32,6 @@ BEGIN
       habilita  => enable(1),
       saida7seg => H1
     );
-  -- Inicializacao display unidade minuto
   DISPLAY2 : ENTITY work.conversorHex7Seg
     PORT MAP
     (
@@ -44,7 +40,6 @@ BEGIN
       habilita  => enable(2),
       saida7seg => H2
     );
-  -- Inicializacao display dezena minuto
   DISPLAY3 : ENTITY work.conversorHex7Seg
     PORT MAP
     (
@@ -53,7 +48,6 @@ BEGIN
       habilita  => enable(3),
       saida7seg => H3
     );
-  -- Inicializacao display unidade hora
   DISPLAY4 : ENTITY work.conversorHex7Seg
     PORT MAP
     (
@@ -62,7 +56,6 @@ BEGIN
       habilita  => enable(4),
       saida7seg => H4
     );
-  -- Inicializacao display dezena hora
   DISPLAY5 : ENTITY work.conversorHex7Seg
     PORT MAP
     (
