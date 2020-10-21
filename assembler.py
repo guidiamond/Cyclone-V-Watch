@@ -31,8 +31,8 @@ class Line_Assemble:
     def get_parts(self):
         if self.line.strip() == "":
             return ("", [])
-        args = ''
-        instruct = ''
+        args = ""
+        instruct = ""
         if " " in self.line:
             instruct = self.line[: self.line.find(" ")].replace(" ", "")
             args = self.line[self.line.find(" ") :].replace(" ", "")
