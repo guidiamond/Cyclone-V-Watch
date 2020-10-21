@@ -13,10 +13,10 @@
 - Sw[1] => change date format hh:mm:ss | AMPM
 - Sw[2] => enable clock time adjust mode
 
-##Keys
+## Keys
 - BUT[0] => +1min
 - BUT[1] => +10min
 - BUT[2] => +1h
 
 # Block Diagram
-![pic](./diagrama-de-blocos.PNG)!
+![pic](./blockDiagram.png)
