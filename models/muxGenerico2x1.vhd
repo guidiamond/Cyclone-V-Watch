@@ -1,18 +1,18 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
 
-library ieee;
-use ieee.std_logic_1164.all;
-
-entity muxGenerico2x1 is
+ENTITY muxGenerico2x1 IS
   -- Total de bits das entradas e saidas
-  generic ( larguraDados : natural := 8);
-  port (
-    entradaA_MUX, entradaB_MUX : in std_logic_vector((larguraDados-1) downto 0);
-    seletor_MUX : in std_logic;
-    saida_MUX : out std_logic_vector((larguraDados-1) downto 0)
+  GENERIC (larguraDados : NATURAL := 8);
+  PORT (
+    entradaA_MUX, entradaB_MUX : IN std_logic_vector((larguraDados - 1) DOWNTO 0);
+    seletor_MUX                : IN std_logic;
+    saida_MUX                  : OUT std_logic_vector((larguraDados - 1) DOWNTO 0)
   );
-end entity;
+END ENTITY;
 
-architecture comportamento of muxGenerico2x1 is
-  begin
-    saida_MUX <= entradaB_MUX when (seletor_MUX = '1') else entradaA_MUX;
-end architecture;
+ARCHITECTURE comportamento OF muxGenerico2x1 IS
+BEGIN
+  saida_MUX <= entradaB_MUX WHEN (seletor_MUX = '1') ELSE
+    entradaA_MUX;
+END ARCHITECTURE;

@@ -6,86 +6,86 @@ USE ieee.numeric_std.ALL;
 
 ENTITY Relogio IS
   GENERIC (
-    DATA_WIDTH : NATURAL := 8
+    DATA_WIDTH : NATURAL := 8;
+    ADDR_WIDTH : NATURAL := 8
   );
 
   PORT (
     -- Input ports
-    Clk         : IN std_logic;
-    SW          : IN std_logic_vector(7 DOWNTO 0);
-    BUTTON      : IN std_logic_vector(3 DOWNTO 0);
+    CLOCK_50 : IN std_logic;
+    SW       : IN std_logic_vector(2 DOWNTO 0);
+    KEY      : IN std_logic_vector(3 DOWNTO 0);
 	 -- Output ports
 	 HEX0, HEX1, HEX2, HEX3, HEX4, HEX5 : OUT STD_LOGIC_VECTOR(6 DOWNTO 0)
   );
 END ENTITY;
-
 ARCHITECTURE rlt OF Relogio IS
 
-  -- Data related signals
-  signal processorInputDATABUS, processorInstruction : std_logic_vector(DATA_WIDTH - 1 DOWNTO 0);
-  signal displayDATA                                 : std_logic_vector(3 downto 0);
+  SIGNAL processorInstruction, databus : std_logic_vector(DATA_WIDTH - 1 DOWNTO 0);
+  SIGNAL displayData   : std_logic_vector(3 DOWNTO 0);
 
-  -- In/Out enabler signals
-  signal load, store, enableTimeBase, clearTimeBase : std_logic;
-  signal enableButtons  : std_logic_vector(3 downto 0);
-  signal enableDisplays : std_logic_vector(5 downto 0);
-  signal enableSwitches : std_logic_vector(7 downto 0);
+  SIGNAL load, store, enableBaseTime, clearTimeBase : std_logic;
+  SIGNAL enableButtons    : std_logic_vector(2 DOWNTO 0);
+  SIGNAL enableDisplays    : std_logic_vector(5 DOWNTO 0);
+  SIGNAL enableSwitches     : std_logic_vector(2 DOWNTO 0);
+
 BEGIN
-  Processor : ENTITY work.processor
-  PORT MAP(
-            Clk             => Clk,                   -- in sync clock
-            dataBus         => processorInputDATABUS, -- in basetime, button and switches databus
-            displayData     => displayDATA,           -- in
-            rawInstruction  => processorInstruction   -- out deps: decoder
-            load            => load,                  -- out deps: decoder
-            store           => store,                 -- out deps: decoder
-          );
 
-  Decoder : ENTITY work.decoder
-  PORT MAP(
-            rawInstruction => processorInstruction,   -- in
-            store          => store,                  -- in
-            load           => load,                   -- in
-            enableDisplay  => enableDisplays,         -- out
-            enableButton   => enableButtons,          -- out
-            enableSW       => enableSwitches,         -- out
-            enableTimeBase => enableTimeBase,         -- out
-            clearTimeBase  => clearTimeBase           -- out
-          );
-
-  baseTimeInterface : ENTITY work.divisorGenerico_e_Interface
-  PORT MAP(
-            clk              => Clk,
-            habilitaLeitura  => enableTimeBase,
-            limpaLeitura     => clearBaseTime,
-            leituraUmSegundo => processorInputDATABUS,
-            selBaseTempo     => SW(0)
-          );
-
-    switchInput : ENTITY work.SwitchInterface
+  Processador : ENTITY work.Processor
     PORT MAP(
-              input      => SW(DATA_WIDTH - 1 DOWNTO 0),
-              enabled    => processorInputDATABUS,
-              output     => habilitaSw
-            );
+      Clk            => CLOCK_50,
+      databus        => databus, 
+      displayData    => displayData,
+      load           => load,
+      store          => store,
+      rawInstruction => processorInstruction
+    );
 
-    buttonInput : ENTITY work.ButtonInterface
+  Decodificador : ENTITY work.Decoder
     PORT MAP(
-              input  => BUTTON(3 DOWNTO 0),
-              enable => processorInputDATABUS,
-              output => barramento_entradaProcessador
-            );
+      rawInstruction   => processorInstruction,
+      store            => store,
+      load             => load,
+      enableDisplay    => enableDisplays,
+      enableButton     => enableButtons,
+      enableSW         => enableSwitches,
+      enableBaseTime   => enableBaseTime,
+      clearBaseTime    => clearTimeBase
+    );
+	 
+  entradaChaves : ENTITY work.switch
+    PORT MAP(
+      input  => SW(2 DOWNTO 0),
+      output => databus,
+      enable => enableSwitches
+    );
 
-    Displays : ENTITY work.DisplayInterface
+  entradaBotoes : ENTITY work.button
     PORT MAP(
-              input  => displayData,
-              enable => enableDisplays,
-              Clk    => Clk,
-              D0     => HEX0,
-              D1     => HEX1,
-              D2     => HEX2, 
-              H3     => HEX3,
-              D4     => HEX4,
-              D5     => HEX5
-            );
+      input  => KEY(2 DOWNTO 0),
+      output => databus,
+      enable => enableButtons
+    );
+
+  interfaceBaseTempo : ENTITY work.divisorGenerico_e_Interface
+    PORT MAP(
+      clk              => CLOCK_50,
+      habilitaLeitura  => enableBaseTime,
+      limpaLeitura     => clearTimeBase,
+      leituraUmSegundo => databus,
+		  selBaseTempo     => SW(0)
+    );
+
+  Displays : ENTITY work.display
+    PORT MAP(
+      input  => displayData,
+      enable => enableDisplays,
+      Clk    => CLOCK_50,
+	  	H0     => HEX0,
+	  	H1     => HEX1,
+	  	H2     => HEX2, 
+	  	H3     => HEX3,
+	  	H4     => HEX4,
+	  	H5     => HEX5
+    );
 END ARCHITECTURE;
